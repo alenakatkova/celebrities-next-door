@@ -4,13 +4,28 @@ import OlView from "ol/View";
 import OlLayerTile from "ol/layer/Tile";
 import OlSourceOSM from "ol/source/OSM";
 
+import {defaults as defaultControls} from 'ol/control';
+import MousePosition from 'ol/control/MousePosition';
+import {createStringXY} from 'ol/coordinate';
+
 class PublicMap extends Component {
   constructor(props) {
     super(props);
 
     this.state = { center: [0, 0], zoom: 1 };
 
+    this.mousePositionControl = new MousePosition({
+      coordinateFormat: createStringXY(4),
+      projection: 'EPSG:4326',
+      // comment the following two lines to have the mouse position
+      // be placed within the map.
+      className: 'custom-mouse-position',
+      target: null,
+      undefinedHTML: '&nbsp;'
+    });
+
     this.olmap = new Map({
+      controls: defaultControls().extend([this.mousePositionControl]),
       target: null,
       layers: [
         new OlLayerTile({
@@ -31,6 +46,7 @@ class PublicMap extends Component {
 
   componentDidMount() {
     this.olmap.setTarget("map");
+    this.mousePositionControl.setTarget("mouse");
 
     // Listen to map changes
     this.olmap.on("moveend", () => {
@@ -54,9 +70,11 @@ class PublicMap extends Component {
   render() {
     this.updateMap(); // Update map on render?
     return (
+        <div>
+        <div id="mouse"></div>
         <div id="map" style={{ width: "100%", height: "360px" }}>
           <button onClick={e => this.userAction()}>setState on click</button>
-        </div>
+        </div></div>
     );
   }
 }

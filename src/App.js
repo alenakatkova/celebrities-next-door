@@ -18,6 +18,7 @@ function App() {
           ?address geo:long ?long.
           
           FILTER ( lang(?birthplace) = "en" )
+          FILTER ( ?lat > ${63} && ?lat < ${65} && ?long > ${10} && ?long < ${100} )
           }
           LIMIT 10
       `;

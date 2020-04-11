@@ -1,3 +1,9 @@
+.map-container {
+  width: 600px;
+  height: 600px;
+  background-color: gray;
+}
+
 .App {
   text-align: center;
 }

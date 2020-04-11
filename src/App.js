@@ -1,5 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
+import './App.css';
+
 function App() {
   const [data, setData] = useState({ bindings: [] });
   const [lat, setLat] = useState(undefined); // UNDEFINED??
@@ -53,23 +55,29 @@ function App() {
   return (
       <Fragment>
         LAT: <input
-            type="text"
+            type="number"
             value={lat}
-            onChange={event => setLat(event.target.value)}
+            onChange={event => setLat(parseFloat(event.target.value))}
         />
         LONG: <input
-            type="text"
+            type="number"
             value={long}
-            onChange={event => setLong(event.target.value)}
+            onChange={event => setLong(parseFloat(event.target.value))}
         />
         <button
             type="button"
             onClick={() => {
-              setQuery(`FILTER ( ?lat > ${lat - 2} && ?lat < ${lat + 2} && ?long > ${long - 2} && ?long < ${long + 2} )`);
+              console.log(lat, long);
+              setQuery(`FILTER ( ?lat > ${lat - 0.5} && ?lat < ${lat + 0.5} && ?long > ${long - 0.5} && ?long < ${long + 0.5} )`);
             }}
         >
           Search
         </button>
+
+        <div className="map-container">
+          bla
+        </div>
+
         {data.bindings.length === 0
             ? "no data"
             : (<ul>

@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import axios from 'axios';
+import OlMap from './OlMap';
 import './App.css';
 
 function App() {
@@ -74,8 +75,8 @@ function App() {
           Search
         </button>
 
-        <div className="map-container">
-          bla
+        <div>
+          <OlMap />
         </div>
 
         {data.bindings.length === 0

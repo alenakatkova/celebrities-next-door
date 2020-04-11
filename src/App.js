@@ -27,6 +27,7 @@ function App() {
           LIMIT 10
       `;
 
+
     let instance = axios.create({
       method: 'get',
       url: 'http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query='

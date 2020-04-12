@@ -2,10 +2,16 @@ import React, { Component } from "react";
 import Map from "ol/Map";
 import Request from "./Request";
 import OlView from "ol/View";
-import OlLayerTile from "ol/layer/Tile";
+import {Tile as OlLayerTile, Vector as VectorLayer} from 'ol/layer';
 import OlSourceOSM from "ol/source/OSM";
 import {toLonLat} from 'ol/proj';
+import {fromLonLat} from 'ol/proj';
 import "ol/ol.css";
+
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import VectorSource from 'ol/source/Vector';
+import {Icon, Style} from 'ol/style';
 
 import {defaults as defaultControls} from 'ol/control';
 import MousePosition from 'ol/control/MousePosition';
@@ -32,13 +38,56 @@ class PublicMap extends Component {
       undefinedHTML: '&nbsp;'
     });
 
+    // Pins on map
+    this.rome = new Feature({
+      geometry: new Point(fromLonLat([12.5, 41.9]))
+    });
+
+    this.london = new Feature({
+      geometry: new Point(fromLonLat([-0.12755, 51.507222]))
+    });
+
+    this.madrid = new Feature({
+      geometry: new Point(fromLonLat([-3.683333, 40.4]))
+    });
+
+    this.rome.setStyle(new Style({
+      image: new Icon({
+        crossOrigin: 'anonymous',
+        src: './pin.svg'
+      })
+    }));
+
+    this.london.setStyle(new Style({
+      image: new Icon({
+        crossOrigin: 'anonymous',
+        src: './pin.svg'
+      })
+    }));
+
+    this.madrid.setStyle(new Style({
+      image: new Icon({
+        crossOrigin: 'anonymous',
+        src: './pin.svg'
+      })
+    }));
+
+
+    this.vectorSource = new VectorSource({
+      features: [this.rome, this.london, this.madrid]
+    });
+
+    this.vectorLayer = new VectorLayer({
+      source: this.vectorSource
+    });
+
     this.olmap = new Map({
       controls: defaultControls().extend([this.mousePositionControl]),
       target: null,
       layers: [
         new OlLayerTile({
           source: new OlSourceOSM()
-        })
+        }), this.vectorLayer
       ],
       // view: new OlView({
       //   center: this.state.center,

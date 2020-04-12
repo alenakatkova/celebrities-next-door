@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import Map from "ol/Map";
+import Request from "./Request";
 import OlView from "ol/View";
 import OlLayerTile from "ol/layer/Tile";
 import OlSourceOSM from "ol/source/OSM";
-import {toStringHDMS} from 'ol/coordinate';
 import {toLonLat} from 'ol/proj';
-import {transform} from 'ol/proj';
 import "ol/ol.css";
 
 import {defaults as defaultControls} from 'ol/control';
@@ -16,7 +15,12 @@ class PublicMap extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { center: [0, 0], zoom: 1 };
+    this.state = {
+      //center: [0, 0],
+      //zoom: 1,
+      lat: 46,
+      long: 6.5
+    };
 
     this.mousePositionControl = new MousePosition({
       coordinateFormat: createStringXY(4),
@@ -36,54 +40,54 @@ class PublicMap extends Component {
           source: new OlSourceOSM()
         })
       ],
+      // view: new OlView({
+      //   center: this.state.center,
+      //   zoom: this.state.zoom
+      // }),
       view: new OlView({
-        center: this.state.center,
-        zoom: this.state.zoom
+        center: [0, 0],
+        zoom: 1
       })
     });
   }
 
-  updateMap() {
-    this.olmap.getView().setCenter(this.state.center);
-    this.olmap.getView().setZoom(this.state.zoom);
-  }
+  // updateMap() {
+  //   this.olmap.getView().setCenter(this.state.center);
+  //   this.olmap.getView().setZoom(this.state.zoom);
+  // }
 
   componentDidMount() {
     this.olmap.setTarget("map");
     this.mousePositionControl.setTarget("mouse");
 
-    // Listen to map changes
-    this.olmap.on("moveend", () => {
-      let center = this.olmap.getView().getCenter();
-      let zoom = this.olmap.getView().getZoom();
-      this.setState({ center, zoom });
-    });
-
-    this.olmap.on('singleclick', function(evt) {
+    this.olmap.on('singleclick', (evt) => {
       let coordinate = evt.coordinate;
       let hdms = toLonLat(coordinate);
+      this.setState({lat: hdms[1], long: hdms[0]})
     });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    let center = this.olmap.getView().getCenter();
-    let zoom = this.olmap.getView().getZoom();
-    return !(center === nextState.center && zoom === nextState.zoom);
-
+    // let center = this.olmap.getView().getCenter();
+    // let zoom = this.olmap.getView().getZoom();
+    console.log(this.state.lat !== nextState.lat);
+    return (this.state.lat !== nextState.lat);
   }
-
-  userAction() {
-    this.setState({ center: [546000, 6868000], zoom: 5 });
-  }
+  //
+  // userAction() {
+  //   this.setState({ center: [546000, 6868000], zoom: 5 });
+  // }
 
   render() {
-    this.updateMap(); // Update map on render?
+    // this.updateMap(); // Update map on render?
     return (
         <div>
-        <div id="mouse"></div>
-        <div id="map" style={{ width: "100%", height: "360px" }}>
-          <button onClick={e => this.userAction()}>setState on click</button>
-        </div></div>
+          <div id="mouse"></div>
+          <div id="map" style={{ width: "100%", height: "360px", marginBottom: "40px" }}>
+
+          </div>
+          <Request lat={this.state.lat} long={this.state.long}/>
+        </div>
     );
   }
 }

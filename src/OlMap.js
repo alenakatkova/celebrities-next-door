@@ -25,7 +25,10 @@ class PublicMap extends Component {
       //center: [0, 0],
       //zoom: 1,
       lat: 46,
-      long: 6.5
+      long: 6.5,
+      pins: [new Feature({
+        geometry: new Point(fromLonLat([12.5, 41.9]))
+      })]
     };
 
     this.mousePositionControl = new MousePosition({
@@ -39,42 +42,19 @@ class PublicMap extends Component {
     });
 
     // Pins on map
-    this.rome = new Feature({
-      geometry: new Point(fromLonLat([12.5, 41.9]))
-    });
+    // this.rome = new Feature({
+    //   geometry: new Point(fromLonLat([12.5, 41.9]))
+    // });
 
-    this.london = new Feature({
-      geometry: new Point(fromLonLat([-0.12755, 51.507222]))
-    });
-
-    this.madrid = new Feature({
-      geometry: new Point(fromLonLat([-3.683333, 40.4]))
-    });
-
-    this.rome.setStyle(new Style({
+    this.state.pins[0].setStyle(new Style({
       image: new Icon({
         crossOrigin: 'anonymous',
         src: './pin.svg'
       })
     }));
-
-    this.london.setStyle(new Style({
-      image: new Icon({
-        crossOrigin: 'anonymous',
-        src: './pin.svg'
-      })
-    }));
-
-    this.madrid.setStyle(new Style({
-      image: new Icon({
-        crossOrigin: 'anonymous',
-        src: './pin.svg'
-      })
-    }));
-
 
     this.vectorSource = new VectorSource({
-      features: [this.rome, this.london, this.madrid]
+      features: this.state.pins
     });
 
     this.vectorLayer = new VectorLayer({

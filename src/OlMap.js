@@ -46,12 +46,17 @@ class PublicMap extends Component {
     //   geometry: new Point(fromLonLat([12.5, 41.9]))
     // });
 
-    this.state.pins[0].setStyle(new Style({
-      image: new Icon({
-        crossOrigin: 'anonymous',
-        src: './pin.svg'
-      })
-    }));
+    this.state.pins.forEach((item) => {
+          console.log(item);
+          item.setStyle(new Style({
+            image: new Icon({
+              crossOrigin: 'anonymous',
+              src: './pin.svg'
+            })
+          }))
+        }
+
+    );
 
     this.vectorSource = new VectorSource({
       features: this.state.pins
@@ -80,10 +85,19 @@ class PublicMap extends Component {
     });
   }
 
-  // updateMap() {
-  //   this.olmap.getView().setCenter(this.state.center);
-  //   this.olmap.getView().setZoom(this.state.zoom);
-  // }
+  updateVectorLayer() {
+
+
+
+  }
+
+  updateMap() {
+
+
+    // this.olmap.setLayerGroup()
+    //this.olmap.getView().setCenter(this.state.center);
+    //this.olmap.getView().setZoom(this.state.zoom);
+  }
 
   componentDidMount() {
     this.olmap.setTarget("map");
@@ -93,14 +107,21 @@ class PublicMap extends Component {
       let coordinate = evt.coordinate;
       let hdms = toLonLat(coordinate);
       this.setState({lat: hdms[1], long: hdms[0]})
+
+      this.setState({
+        pins: [ ...this.state.pins, new Feature({
+          geometry: new Point(fromLonLat([hdms[0], hdms[1]]))
+        })  ]
+      })
     });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
     // let center = this.olmap.getView().getCenter();
     // let zoom = this.olmap.getView().getZoom();
-    console.log(this.state.lat !== nextState.lat);
-    return (this.state.lat !== nextState.lat);
+    this.updateVectorLayer();
+    // console.log(this.state.pins.length < nextState.pins.length);
+    return (this.state.pins.length < nextState.pins.length);
   }
   //
   // userAction() {
@@ -108,7 +129,7 @@ class PublicMap extends Component {
   // }
 
   render() {
-    // this.updateMap(); // Update map on render?
+    this.updateMap(); // Update map on render?
     return (
         <div>
           <div id="mouse"></div>

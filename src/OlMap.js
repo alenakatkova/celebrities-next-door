@@ -3,6 +3,9 @@ import Map from "ol/Map";
 import OlView from "ol/View";
 import OlLayerTile from "ol/layer/Tile";
 import OlSourceOSM from "ol/source/OSM";
+import {toStringHDMS} from 'ol/coordinate';
+import {toLonLat} from 'ol/proj';
+import {transform} from 'ol/proj';
 import "ol/ol.css";
 
 import {defaults as defaultControls} from 'ol/control';
@@ -54,6 +57,11 @@ class PublicMap extends Component {
       let center = this.olmap.getView().getCenter();
       let zoom = this.olmap.getView().getZoom();
       this.setState({ center, zoom });
+    });
+
+    this.olmap.on('singleclick', function(evt) {
+      let coordinate = evt.coordinate;
+      let hdms = toLonLat(coordinate);
     });
   }
 

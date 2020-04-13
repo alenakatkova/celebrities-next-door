@@ -117,24 +117,36 @@ class PublicMap extends Component {
     //   vectorSource.addFeature(feature);
     // });
 
-    this.olmap.on('singleclick', (evt) => {
+    this.olmap.on('click', (evt) => {
       let coordinate = evt.coordinate;
       let hdms = toLonLat(coordinate);
 
-      this.setState({lat: hdms[1], long: hdms[0]})
+      // new start
+      var feature = this.olmap.forEachFeatureAtPixel(evt.pixel,
+          function(feature) {
+            return feature;
+          });
+      if (feature) {
+        console.log("hit pin");
+      } else {
+        this.setState({lat: hdms[1], long: hdms[0]})
 
-      let newPin = new Feature({
-        geometry: new Point(fromLonLat([hdms[0], hdms[1]]))
-      });
-      newPin.setStyle(new Style({
-        image: new Icon({
-          crossOrigin: 'anonymous',
-          src: './pin.svg'
-        })
-      }));
-      this.setState({
-        pins: [ ...this.state.pins, newPin]
-      }, () => this.vectorSource.addFeature(newPin))
+        let newPin = new Feature({
+          geometry: new Point(fromLonLat([hdms[0], hdms[1]]))
+        });
+        newPin.setStyle(new Style({
+          image: new Icon({
+            crossOrigin: 'anonymous',
+            src: './pin.svg'
+          })
+        }));
+        this.setState({
+          pins: [ ...this.state.pins, newPin]
+        }, () => this.vectorSource.addFeature(newPin))
+      }
+      // new begin
+
+
     });
   }
 

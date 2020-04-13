@@ -103,16 +103,38 @@ class PublicMap extends Component {
     this.olmap.setTarget("map");
     this.mousePositionControl.setTarget("mouse");
 
+    // this.olmap.on('click', function(evt){
+    //   var feature = new Feature(
+    //       new Point(evt.coordinate)
+    //   );
+    //   feature.setStyle(new Style({
+    //     image: new Icon({
+    //       color: [113, 140, 0],
+    //       crossOrigin: 'anonymous',
+    //       src: './icon.svg'
+    //     })
+    //   }));
+    //   vectorSource.addFeature(feature);
+    // });
+
     this.olmap.on('singleclick', (evt) => {
       let coordinate = evt.coordinate;
       let hdms = toLonLat(coordinate);
+
       this.setState({lat: hdms[1], long: hdms[0]})
 
+      let newPin = new Feature({
+        geometry: new Point(fromLonLat([hdms[0], hdms[1]]))
+      });
+      newPin.setStyle(new Style({
+        image: new Icon({
+          crossOrigin: 'anonymous',
+          src: './pin.svg'
+        })
+      }));
       this.setState({
-        pins: [ ...this.state.pins, new Feature({
-          geometry: new Point(fromLonLat([hdms[0], hdms[1]]))
-        })  ]
-      })
+        pins: [ ...this.state.pins, newPin]
+      }, () => this.vectorSource.addFeature(newPin))
     });
   }
 

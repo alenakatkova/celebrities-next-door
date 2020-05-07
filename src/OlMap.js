@@ -22,29 +22,24 @@ class PublicMap extends Component {
     super(props);
 
     this.state = {
-      //center: [0, 0],
-      //zoom: 1,
       lat: 46,
       long: 6.5,
       pins: [new Feature({
         geometry: new Point(fromLonLat([12.5, 41.9]))
-      })]
-    };
+      })],
 
+      data: [],
+      query: undefined,
+      latFromRequest: 0
+    };
+    this.handleLatChange = this.handleLatChange.bind(this);
     this.mousePositionControl = new MousePosition({
       coordinateFormat: createStringXY(4),
       projection: 'EPSG:4326',
-      // comment the following two lines to have the mouse position
-      // be placed within the map.
       className: 'custom-mouse-position',
       target: null,
       undefinedHTML: '&nbsp;'
     });
-
-    // Pins on map
-    // this.rome = new Feature({
-    //   geometry: new Point(fromLonLat([12.5, 41.9]))
-    // });
 
     this.state.pins.forEach((item) => {
           console.log(item);
@@ -74,54 +69,36 @@ class PublicMap extends Component {
           source: new OlSourceOSM()
         }), this.vectorLayer
       ],
-      // view: new OlView({
-      //   center: this.state.center,
-      //   zoom: this.state.zoom
-      // }),
       view: new OlView({
         center: [0, 0],
         zoom: 1
       })
     });
   }
-
+  handleLatChange(latt) {
+   // this.setState({latt});
+    this.setState(prevState =>{
+      return{
+        ...prevState,
+        latFromRequest : latt
+      }
+    })
+  }
   updateVectorLayer() {
-
-
-
   }
 
   updateMap() {
 
-
-    // this.olmap.setLayerGroup()
-    //this.olmap.getView().setCenter(this.state.center);
-    //this.olmap.getView().setZoom(this.state.zoom);
   }
 
   componentDidMount() {
     this.olmap.setTarget("map");
     this.mousePositionControl.setTarget("mouse");
 
-    // this.olmap.on('click', function(evt){
-    //   var feature = new Feature(
-    //       new Point(evt.coordinate)
-    //   );
-    //   feature.setStyle(new Style({
-    //     image: new Icon({
-    //       color: [113, 140, 0],
-    //       crossOrigin: 'anonymous',
-    //       src: './icon.svg'
-    //     })
-    //   }));
-    //   vectorSource.addFeature(feature);
-    // });
-
     this.olmap.on('click', (evt) => {
       let coordinate = evt.coordinate;
       let hdms = toLonLat(coordinate);
 
-      // new start
       var feature = this.olmap.forEachFeatureAtPixel(evt.pixel,
           function(feature) {
             return feature;
@@ -144,23 +121,14 @@ class PublicMap extends Component {
           pins: [ ...this.state.pins, newPin]
         }, () => this.vectorSource.addFeature(newPin))
       }
-      // new begin
-
-
     });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    // let center = this.olmap.getView().getCenter();
-    // let zoom = this.olmap.getView().getZoom();
     this.updateVectorLayer();
-    // console.log(this.state.pins.length < nextState.pins.length);
     return (this.state.pins.length < nextState.pins.length);
   }
-  //
-  // userAction() {
-  //   this.setState({ center: [546000, 6868000], zoom: 5 });
-  // }
+
 
   render() {
     this.updateMap(); // Update map on render?
@@ -170,7 +138,7 @@ class PublicMap extends Component {
           <div id="map" style={{ width: "100%", height: "360px", marginBottom: "40px" }}>
 
           </div>
-          <Request lat={this.state.lat} long={this.state.long}/>
+          <Request lat={this.state.lat} long={this.state.long} onLatChange={this.handleLatChange}/>
         </div>
     );
   }

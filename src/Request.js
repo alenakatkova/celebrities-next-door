@@ -5,16 +5,10 @@ function Request(props) {
   const [data, setData] = useState({ bindings: [] });
   const [lat, setLat] = useState(props.lat);
   const [long, setLong] = useState(props.long);
-  const [query, setQuery] = useState(undefined); // UNDEFINED??
 
-  useEffect(() => {
-    setLat(props.lat);
-  }, [props.lat]);
-
-  useEffect(() => {
-    setLong(props.long);
-  }, [props.long]);
-
+  const handleChange = () => {
+    props.onLatChange(lat);
+  };
 
   useEffect(() => {
     const q  = `
@@ -32,7 +26,7 @@ function Request(props) {
           ?address geo:long ?long.
           
           FILTER ( lang(?birthplace) = "en" )
-          ${query}
+          FILTER ( ?lat > ${props.lat - 0.5} && ?lat < ${props.lat + 0.5} && ?long > ${props.long - 0.5} && ?long < ${props.long + 0.5} )
           }
           LIMIT 10
       `;
@@ -55,32 +49,28 @@ function Request(props) {
             setData(response.data.results);
           }
         })
+        // .then(function(r) {
+        //   console.log(data);
+        //   handleChange();
+        //})
         .catch(function (error) {
           console.log(error);
         });
-  }, [query]);
+  }, [props.lat, props.long]);
 
   return (
       <Fragment>
         LAT: <input
           type="number"
           value={lat}
-          onChange={event => setLat(parseFloat(event.target.value))}
+          onChange={(event) => {setLat(parseFloat(event.target.value))}}
       />
         LONG: <input
           type="number"
           value={long}
           onChange={event => setLong(parseFloat(event.target.value))}
       />
-        <button
-            type="button"
-            onClick={() => {
-              console.log(lat, long);
-              setQuery(`FILTER ( ?lat > ${lat - 0.5} && ?lat < ${lat + 0.5} && ?long > ${long - 0.5} && ?long < ${long + 0.5} )`);
-            }}
-        >
-          Search
-        </button>
+
 
         {data.bindings.length === 0
             ? "no data"
